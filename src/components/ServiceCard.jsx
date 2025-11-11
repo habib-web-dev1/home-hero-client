@@ -15,7 +15,7 @@ const ServiceCard = ({ service }) => {
       <div className="card-body p-6 flex flex-col justify-between grow">
         <div>
           <div className="flex flex-col gap-2 items-start mb-2">
-            <h2 className="card-title text-xl font-bold text-primary-focus dark:text-primary">
+            <h2 className="card-title text-lg font-bold text-primary-focus dark:text-primary">
               {name}
             </h2>
             <div className="badge badge-lg badge-accent text-white font-semibold">
@@ -39,7 +39,7 @@ const ServiceCard = ({ service }) => {
 
         <div className="card-actions justify-end">
           <Link
-            to={`/service/${_id}`}
+            to={`/services/${_id}`}
             className="btn btn-primary w-full mt-2 transition-transform hover:scale-[1.02]"
           >
             <FaInfoCircle /> View Details
