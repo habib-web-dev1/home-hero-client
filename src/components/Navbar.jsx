@@ -14,7 +14,7 @@ const Navbar = () => {
   }, []);
   const handleTheme = (checked) => {
     const theme = checked ? "dark" : "light";
-    setDarkMode(checked); // Make sure this is boolean
+    setDarkMode(checked);
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   };
@@ -121,7 +121,7 @@ const Navbar = () => {
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+              className="menu menu-sm dropdown-content mt-3 z-1 p-2 shadow bg-base-100 rounded-box w-52"
             >
               {navLinks}
 

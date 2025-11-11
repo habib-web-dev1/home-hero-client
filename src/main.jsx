@@ -8,6 +8,7 @@ import AllServices from "./pages/AllServices";
 import AuthProvider from "./context/AuthProvider";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ServiceDetails from "./pages/ServiceDetails";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
+        Component: Home,
+      },
+      {
+        path: "/home",
         Component: Home,
       },
       {
@@ -28,6 +33,12 @@ const router = createBrowserRouter([
       {
         path: "/register",
         Component: Register,
+      },
+      {
+        path: "/services/:id",
+        loader: ({ params }) =>
+          fetch(`http://localhost:5000/services/${params.id}`),
+        Component: ServiceDetails,
       },
     ],
   },
