@@ -2,9 +2,29 @@ import React, { useContext } from "react";
 import { Link, NavLink } from "react-router";
 import { AuthContext } from "../context/AuthContext";
 import { CiLight } from "react-icons/ci";
+import Swal from "sweetalert2";
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext) || {};
-
+  const LogOut = async () => {
+    try {
+      await logOut();
+      Swal.fire({
+        icon: "success",
+        title: "Logged Out!",
+        text: "You have successfully logged Out.",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch {
+      let errorMessage = "An unknown error occurred.";
+      Swal.fire({
+        icon: "error",
+        title: "LogOut Failed",
+        text: errorMessage,
+        confirmButtonColor: "#d33",
+      });
+    }
+  };
   const navLinks = (
     <>
       <li>
@@ -102,7 +122,7 @@ const Navbar = () => {
                 </>
               ) : (
                 <li>
-                  <button onClick={logOut}>Logout</button>
+                  <button onClick={LogOut}>Logout</button>
                 </li>
               )}
             </ul>
@@ -131,13 +151,14 @@ const Navbar = () => {
                 role="button"
                 className="btn btn-ghost btn-circle avatar"
               >
-                <div className="w-10 rounded-full">
+                <div className=" rounded-full">
                   <img
                     alt="User Profile"
-                    src={
-                      user.photoURL ||
-                      "https://i.ibb.co/L8Gj1c5/default-avatar.png"
-                    }
+                    src={`${
+                      user
+                        ? user.photoURL
+                        : "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    }`}
                     title={user.displayName || user.email}
                   />
                 </div>
@@ -153,12 +174,12 @@ const Navbar = () => {
                   <NavLink to="/profile">Profile</NavLink>
                 </li>
                 <li>
-                  <button onClick={logOut}>Logout</button>
+                  <button onClick={LogOut}>Logout</button>
                 </li>
               </ul>
             </div>
           ) : (
-            <>
+            <div className="space-x-4">
               <NavLink
                 to="/login"
                 className="btn btn-ghost hidden md:inline-flex"
@@ -168,7 +189,7 @@ const Navbar = () => {
               <NavLink to="/register" className="btn btn-primary btn-sm">
                 Register
               </NavLink>
-            </>
+            </div>
           )}
         </div>
       </div>

@@ -6,6 +6,7 @@ import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import AllServices from "./pages/AllServices";
 import AuthProvider from "./context/AuthProvider";
+import Login from "./pages/Login";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
       {
         path: "/services",
         Component: AllServices,
+      },
+      {
+        path: "/login",
+        Component: Login,
       },
     ],
   },
