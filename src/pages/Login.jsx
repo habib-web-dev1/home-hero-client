@@ -29,7 +29,7 @@ const Login = () => {
         timer: 1500,
       });
 
-      navigate(location.state ? location.state : "/");
+      navigate(location.state?.from || "/");
     } catch {
       let errorMessage = "An unknown error occurred.";
       Swal.fire({
@@ -53,7 +53,7 @@ const Login = () => {
         timer: 1500,
       });
 
-      navigate(location.state ? location.state : "/");
+      navigate(location.state?.from || "/");
     } catch {
       Swal.fire({
         icon: "error",
