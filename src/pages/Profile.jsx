@@ -118,8 +118,7 @@ const UpdateProfileModal = ({ isOpen, onClose, currentUser, onUpdate }) => {
                   className="w-20 h-20 rounded-full object-cover mx-auto border-2 border-gray-200"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src =
-                      "https://placehold.co/80x80/cccccc/333333?text=Error";
+                    e.target.src = "https://placehold.co/80x80/cccccc/333333?";
                   }}
                 />
               </div>
