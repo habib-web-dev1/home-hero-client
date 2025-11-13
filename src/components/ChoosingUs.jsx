@@ -2,6 +2,7 @@ import React from "react";
 import { MdOutlineSecurity } from "react-icons/md";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { IoIosPeople } from "react-icons/io";
+import { motion } from "framer-motion";
 const ChoosingUs = () => {
   return (
     <div>
@@ -16,7 +17,13 @@ const ChoosingUs = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 1 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
           <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-t-green-500 text-center">
             <MdOutlineSecurity className="text-5xl text-green-500 mx-auto mb-4" />
             <h3 className="text-xl font-bold mb-3">Certified & Trusted</h3>
@@ -41,7 +48,7 @@ const ChoosingUs = () => {
               with bookings or issues.
             </p>
           </div>
-        </div>
+        </motion.div>
       </section>
     </div>
   );

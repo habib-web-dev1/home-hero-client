@@ -1,7 +1,7 @@
 import React from "react";
 import { FaDollarSign, FaInfoCircle, FaUserCircle } from "react-icons/fa";
 import { Link } from "react-router";
-
+import { motion } from "framer-motion";
 const ServiceCard = ({ service }) => {
   const { _id, name, image, category, description, price, provider } = service;
   const truncateDescription = (text) => {
@@ -17,7 +17,12 @@ const ServiceCard = ({ service }) => {
     return isNaN(numericPrice) ? "0.00" : numericPrice.toFixed(2);
   };
   return (
-    <div className="card w-full bg-base-100 shadow-xl border border-gray-200 dark:border-gray-700 transition-all hover:shadow-2xl flex flex-col">
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="card w-full bg-base-100 shadow-xl border border-gray-200 dark:border-gray-700 transition-all hover:shadow-2xl flex flex-col"
+    >
       <figure className="h-52 w-full">
         <img src={image} alt={name} className="w-full h-full object-cover" />
       </figure>
@@ -56,7 +61,7 @@ const ServiceCard = ({ service }) => {
           </Link>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
