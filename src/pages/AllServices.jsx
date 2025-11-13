@@ -65,7 +65,7 @@ const AllServices = () => {
   return (
     <div className="py-16">
       <div className="text-center mb-12">
-        <h1 className="text-5xl font-extrabold text-gray-900 mb-3 leading-tight">
+        <h1 className="text-5xl font-extrabold  mb-3 leading-tight">
           Explore All Services 🛠️
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
