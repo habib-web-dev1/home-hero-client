@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -13,20 +12,22 @@ import { AuthContext } from "./AuthContext";
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
   const createUser = (email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
+
   const signIn = (email, password) => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
+
   const updateUser = async (updateData) => {
     if (!auth.currentUser) return Promise.reject("No user logged in");
     await updateProfile(auth.currentUser, updateData);
     setUser((prev) => {
       if (!prev) return null;
-
       return {
         ...prev,
         ...updateData,
@@ -35,21 +36,41 @@ const AuthProvider = ({ children }) => {
       };
     });
   };
+
   const logOut = () => {
+    setLoading(true);
     return signOut(auth);
   };
+
+  // Sync Firebase User with MongoDB Role
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser?.email) {
+        try {
+          // Fetch the role from your backend
+          const res = await fetch(
+            `https://home-hero-server-kappa.vercel.app/users/role/${currentUser.email}`
+          );
+          const data = await res.json();
+
+          // Combine Firebase user data with MongoDB role
+          setUser({ ...currentUser, role: data.role || "user" });
+        } catch (error) {
+          console.error("Error fetching user role:", error);
+          setUser(currentUser);
+        }
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
-    return () => {
-      unsubscribe();
-    };
+
+    return () => unsubscribe();
   }, []);
+
   const authData = {
     user,
-    setUser,
+    setUser, // Crucial for manual updates during login/register
     createUser,
     logOut,
     signIn,
@@ -57,6 +78,7 @@ const AuthProvider = ({ children }) => {
     setLoading,
     updateUser,
   };
+
   return (
     <AuthContext.Provider value={authData}>{children}</AuthContext.Provider>
   );

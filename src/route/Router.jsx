@@ -6,82 +6,106 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ServiceDetails from "../pages/ServiceDetails";
 import PrivateRoute from "../routes/PrivateRoute";
+import AdminRoute from "../routes/AdminRoute"; // Import AdminRoute
+import ProviderRoute from "../routes/ProviderRoute"; // Import ProviderRoute
 import MyBookings from "../pages/MyBookings";
 import AddService from "../pages/AddService";
 import MyServices from "../pages/MyServices";
 import ErrorPage from "../pages/ErrorPage";
 import Profile from "../pages/Profile";
+import DashboardLayout from "../components/DashboardLayout";
+import DashboardHome from "../pages/DashboardHome";
+import ManageUsers from "../pages/ManageUsers";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: Layout,
+    element: <Layout />,
     children: [
       {
         index: true,
-        Component: Home,
+        element: <Home />,
       },
       {
-        path: "/home",
-        Component: Home,
+        path: "home",
+        element: <Home />,
       },
       {
-        path: "/services",
-        Component: AllServices,
+        path: "services",
+        element: <AllServices />,
       },
       {
-        path: "/login",
-        Component: Login,
+        path: "login",
+        element: <Login />,
       },
       {
-        path: "/register",
-        Component: Register,
+        path: "register",
+        element: <Register />,
       },
       {
-        path: "/services/:id",
+        path: "services/:id",
         loader: ({ params }) =>
           fetch(
             `https://home-hero-server-kappa.vercel.app/services/${params.id}`
           ),
+        element: <ServiceDetails />,
+      },
+    ],
+  },
+  {
+    // ROLE-BASED DASHBOARD PARENT ROUTE
+    path: "/dashboard",
+    element: (
+      <PrivateRoute>
+        <DashboardLayout />
+      </PrivateRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <DashboardHome />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
+      },
+      // Customer Routes (Accessible to all logged in users)
+      {
+        path: "my-bookings",
+        element: <MyBookings />,
+      },
+      // Provider Routes (Guarded)
+      {
+        path: "add-service",
         element: (
-          <PrivateRoute>
-            <ServiceDetails></ServiceDetails>
-          </PrivateRoute>
+          <ProviderRoute>
+            <AddService />
+          </ProviderRoute>
         ),
       },
       {
-        path: "/my-bookings",
+        path: "my-services",
         element: (
-          <PrivateRoute>
-            <MyBookings />
-          </PrivateRoute>
+          <ProviderRoute>
+            <MyServices />
+          </ProviderRoute>
         ),
       },
+      // Admin Routes (Guarded)
       {
-        path: "/add-service",
-        Component: AddService,
-      },
-      {
-        path: "/my-services",
+        path: "manage-users",
         element: (
-          <PrivateRoute>
-            <MyServices></MyServices>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/my-profile",
-        element: (
-          <PrivateRoute>
-            <Profile></Profile>
-          </PrivateRoute>
+          <AdminRoute>
+            <ManageUsers />
+          </AdminRoute>
         ),
       },
     ],
   },
   {
     path: "*",
-    Component: ErrorPage,
+    element: <ErrorPage />,
   },
 ]);
+
 export default router;

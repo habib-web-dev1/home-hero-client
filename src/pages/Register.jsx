@@ -48,6 +48,12 @@ const Register = () => {
       const result = await createUser(email, password);
       const user = result.user;
       await updateUser({ displayName: name, photoURL: photoURL });
+      const userInfo = { name, email, photoURL };
+      await fetch("https://home-hero-server-kappa.vercel.app/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userInfo),
+      });
       setUser({ ...user, displayName: name, photoURL: photoURL });
       Swal.fire({
         icon: "success",
@@ -73,7 +79,19 @@ const Register = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      const userInfo = {
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+      };
+
+      await fetch("https://home-hero-server-kappa.vercel.app/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userInfo),
+      });
       Swal.fire({
         icon: "success",
         title: "Logged In!",
