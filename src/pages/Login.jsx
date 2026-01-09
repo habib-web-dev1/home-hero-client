@@ -1,173 +1,289 @@
-import React, { useContext, useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useContext, useState } from "react";
+import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router";
 import { AuthContext } from "../context/AuthContext";
-import Swal from "sweetalert2";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
+import { toast } from "react-toastify";
+import {
+  FiEye,
+  FiEyeOff,
+  FiMail,
+  FiLock,
+  FiArrowRight,
+  FiUser,
+  FiShield,
+} from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
+
 const googleProvider = new GoogleAuthProvider();
+
 const Login = () => {
   const { signIn } = useContext(AuthContext) || {};
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    const email = form.get("email");
-    const password = form.get("password");
+    setIsLoading(true);
 
     try {
-      await signIn(email, password);
-      Swal.fire({
-        icon: "success",
-        title: "Logged In!",
-        text: "You have successfully logged in.",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-
+      await signIn(formData.email, formData.password);
+      toast.success("Welcome back! You've successfully logged in.");
       navigate(location.state?.from || "/");
-    } catch {
-      let errorMessage = "An unknown error occurred.";
-      Swal.fire({
-        icon: "error",
-        title: "Login Failed",
-        text: errorMessage,
-        confirmButtonColor: "#d33",
-      });
-      form.reset();
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Invalid email or password. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
+    setIsLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
-      Swal.fire({
-        icon: "success",
-        title: "Logged In!",
-        text: "You have successfully logged in with Google.",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-
+      toast.success("Successfully logged in with Google!");
       navigate(location.state?.from || "/");
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Google Login Failed",
-        text: "Could not log in with Google. Please try again.",
-        confirmButtonColor: "#d33",
-      });
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error("Google login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-base-200 p-4">
-      <div className="card w-full max-w-md bg-base-100 shadow-xl border border-gray-200 dark:border-gray-700">
-        <div className="card-body p-8">
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 bg-primary-focus/10 rounded-full flex items-center justify-center">
-              <svg
-                className="w-12 h-12 text-primary"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2.29-10.71l-3.29 3.29c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l2.58-2.58 2.58 2.58c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-3.29-3.29c-.39-.39-1.02-.39-1.41 0zM12 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-              </svg>
-            </div>
-          </div>
-
-          <h2 className="card-title text-3xl font-bold text-center text-gray-800 dark:text-white mb-2">
-            Welcome back
-          </h2>
-          <p className="text-center text-gray-500 dark:text-gray-400 mb-8">
-            Please enter your details to login.
-          </p>
-
-          <form onSubmit={handleLogin}>
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text text-gray-700 dark:text-gray-300">
-                  Email
-                </span>
-              </label>
-              <input
-                type="email"
-                name="email"
-                placeholder="name@example.com"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
-
-            <div className="form-control mb-2">
-              <label className="label">
-                <span className="label-text text-gray-700 dark:text-gray-300">
-                  Password
-                </span>
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="••••••••"
-                  className="input input-bordered w-full pr-10"
-                  required
-                />
-                <span
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-gray-400"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
+    <div className="min-h-screen bg-linear-to-br from-green-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center">
+        {/* Left Side - Branding */}
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          className="hidden lg:block"
+        >
+          <div className="text-center lg:text-left">
+            <div className="flex items-center justify-center lg:justify-start gap-3 mb-8">
+              <div className="w-16 h-16 bg-linear-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-xl">
+                <span className="text-white font-bold text-2xl">H</span>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  Home<span className="text-green-600">Hero</span>
+                </h1>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Trusted Services
+                </p>
               </div>
             </div>
 
-            <div className="text-right mb-6">
-              <Link
-                to="/forgot-password"
-                className="label-text-alt link link-hover text-primary hover:underline"
-              >
-                Forgot Password?
-              </Link>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+              Welcome Back to Your Trusted Service Platform
+            </h2>
+
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+              Connect with verified professionals, manage your services, and
+              grow your business with HomeHero's comprehensive platform.
+            </p>
+
+            <div className="grid grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <FiShield className="w-6 h-6 text-blue-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                  Verified
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  All providers background checked
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <FiUser className="w-6 h-6 text-green-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                  Trusted
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  100K+ satisfied customers
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <FiArrowRight className="w-6 h-6 text-purple-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                  Easy
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Book services in 3 clicks
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Right Side - Login Form */}
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="w-full max-w-md mx-auto"
+        >
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 border border-gray-100 dark:border-slate-700">
+            {/* Mobile Logo */}
+            <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
+              <div className="w-12 h-12 bg-linear-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-lg">H</span>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Home<span className="text-green-600">Hero</span>
+                </h1>
+              </div>
             </div>
 
-            <div className="form-control mb-6">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                Sign In
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                Welcome back! Please enter your details.
+              </p>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-6">
+              {/* Email Field */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="Enter your email"
+                    className="w-full pl-12 pr-4 py-4 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white transition-all duration-200"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Password Field */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Enter your password"
+                    className="w-full pl-12 pr-12 py-4 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white transition-all duration-200"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                  >
+                    {showPassword ? (
+                      <FiEyeOff className="w-5 h-5" />
+                    ) : (
+                      <FiEye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Login Button */}
               <button
                 type="submit"
-                className="btn btn-primary w-full text-lg font-semibold hover:scale-[1.01] transition-transform"
+                disabled={isLoading}
+                className="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Login
+                {isLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Signing In...
+                  </>
+                ) : (
+                  <>
+                    Sign In
+                    <FiArrowRight className="w-5 h-5" />
+                  </>
+                )}
               </button>
+
+              {/* Demo User Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({
+                    email: "user@gmail.com",
+                    password: "User1@",
+                  });
+                }}
+                className="w-full py-3 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-medium rounded-xl transition-all duration-200 border border-blue-300 dark:border-blue-700"
+              >
+                Try Demo Account
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="my-8 flex items-center">
+              <div className="flex-1 border-t border-gray-300 dark:border-slate-600"></div>
+              <span className="px-4 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-slate-800">
+                Or continue with
+              </span>
+              <div className="flex-1 border-t border-gray-300 dark:border-slate-600"></div>
             </div>
-          </form>
 
-          <div className="divider text-gray-400 mb-6">OR</div>
-
-          <div className="space-y-4">
+            {/* Google Login */}
             <button
               onClick={handleGoogleLogin}
-              className="btn btn-outline w-full flex items-center justify-center space-x-2 border-gray-300 dark:border-gray-600 hover:border-primary hover:bg-primary-focus/10 dark:hover:bg-primary-focus/20"
+              disabled={isLoading}
+              className="w-full py-4 bg-white dark:bg-slate-700 border-2 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
             >
-              <FcGoogle className="text-xl text-red-500" />
-              <span>With Google</span>
+              <FcGoogle className="w-6 h-6" />
+              Continue with Google
             </button>
-          </div>
 
-          <div className="text-center mt-8">
-            <p className="text-gray-600 dark:text-gray-400">
-              Don't have an account?
-              <Link
-                to="/register"
-                className="link link-hover text-primary font-semibold hover:underline"
-              >
-                Register now
-              </Link>
-            </p>
+            {/* Sign Up Link */}
+            <div className="text-center mt-8">
+              <p className="text-gray-600 dark:text-gray-400">
+                Don't have an account?{" "}
+                <Link
+                  to="/register"
+                  className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-semibold transition-colors duration-200"
+                >
+                  Sign up for free
+                </Link>
+              </p>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

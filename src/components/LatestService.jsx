@@ -1,8 +1,10 @@
 import React, { use } from "react";
 import ServiceCard from "./ServiceCard";
-const servicePromise = fetch(
-  "https://home-hero-server-kappa.vercel.app/latest-services"
-).then((res) => res.json());
+import { API_ENDPOINTS } from "../config/api";
+
+const servicePromise = fetch(API_ENDPOINTS.latestServices).then((res) =>
+  res.json()
+);
 const LatestService = () => {
   const services = use(servicePromise);
   return (

@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
 import { AuthContext } from "./AuthContext";
+import { API_ENDPOINTS } from "../config/api";
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -48,9 +49,7 @@ const AuthProvider = ({ children }) => {
       if (currentUser?.email) {
         try {
           // Fetch the role from your backend
-          const res = await fetch(
-            `https://home-hero-server-kappa.vercel.app/users/role/${currentUser.email}`
-          );
+          const res = await fetch(API_ENDPOINTS.userRole(currentUser.email));
           const data = await res.json();
 
           // Combine Firebase user data with MongoDB role

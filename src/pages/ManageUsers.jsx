@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react"; // Added React here
 import Swal from "sweetalert2";
 import { FaUserShield, FaTools } from "react-icons/fa";
+import { API_ENDPOINTS } from "../config/api";
 
 const ManageUsers = () => {
   // Using direct state (removed the React. prefix for cleaner code)
   const [users, setUsers] = useState([]);
 
   const fetchUsers = () => {
-    fetch("https://home-hero-server-kappa.vercel.app/all-users")
+    fetch(API_ENDPOINTS.allUsers)
       .then((res) => res.json())
       .then((data) => {
         // Safety check: ensure data is an array before setting state
@@ -25,7 +26,7 @@ const ManageUsers = () => {
   }, []);
 
   const handleRoleUpdate = (user, newRole) => {
-    fetch(`https://home-hero-server-kappa.vercel.app/users/admin/${user._id}`, {
+    fetch(`${API_ENDPOINTS.users}/admin/${user._id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role: newRole }),

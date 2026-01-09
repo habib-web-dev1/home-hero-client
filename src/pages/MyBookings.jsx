@@ -13,6 +13,7 @@ import {
 import Swal from "sweetalert2";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router";
+import { API_ENDPOINTS } from "../config/api";
 
 const MyBookings = () => {
   const { user, loading: authLoading } = useContext(AuthContext) || {};
@@ -51,7 +52,7 @@ const MyBookings = () => {
 
     try {
       const response = await axios.post(
-        `https://home-hero-server-kappa.vercel.app/services/${selectedBooking.serviceId}/review`,
+        API_ENDPOINTS.addReview(selectedBooking.serviceId),
         reviewData
       );
 
@@ -86,9 +87,7 @@ const MyBookings = () => {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `https://home-hero-server-kappa.vercel.app/bookings`
-      );
+      const response = await axios.get(API_ENDPOINTS.bookings);
       const userBookings = response.data.filter(
         (booking) => booking.userEmail === user.email
       );
@@ -123,7 +122,7 @@ const MyBookings = () => {
       if (result.isConfirmed) {
         try {
           const response = await axios.delete(
-            `https://home-hero-server-kappa.vercel.app/bookings/${bookingId}`
+            `${API_ENDPOINTS.bookings}/${bookingId}`
           );
 
           if (response.data.success) {

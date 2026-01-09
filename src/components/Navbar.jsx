@@ -1,12 +1,42 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
 import { AuthContext } from "../context/AuthContext";
-import Swal from "sweetalert2";
+import { toast } from "react-toastify";
+import {
+  FiHome,
+  FiGrid,
+  FiUser,
+  FiSun,
+  FiMoon,
+  FiMenu,
+  FiX,
+  FiLogOut,
+  FiSettings,
+  FiBookOpen,
+  FiPhone,
+  FiInfo,
+} from "react-icons/fi";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext) || {};
   const [darkMode, setDarkMode] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const navigate = useNavigate();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownOpen && !event.target.closest(".profile-dropdown")) {
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [profileDropdownOpen]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
@@ -25,158 +55,295 @@ const Navbar = () => {
   const handleLogOut = async () => {
     try {
       await logOut();
-      Swal.fire({
-        icon: "success",
-        title: "Logged Out!",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      toast.success("Successfully logged out!");
       navigate("/", { replace: true });
+      setMobileMenuOpen(false);
+      setProfileDropdownOpen(false);
     } catch (error) {
       console.error("Logout error:", error);
+      toast.error("Error logging out");
     }
   };
 
-  const navLinks = (
-    <>
-      <li>
-        <NavLink
-          to="/"
-          className={({ isActive }) =>
-            isActive ? "text-primary font-bold" : "font-medium"
-          }
-        >
-          Home
-        </NavLink>
-      </li>
-      <li>
-        <NavLink
-          to="/services"
-          className={({ isActive }) =>
-            isActive ? "text-primary font-bold" : "font-medium"
-          }
-        >
-          Services
-        </NavLink>
-      </li>
-      {/* Moved all private links into one single Dashboard link */}
-      {user && (
-        <li>
-          <NavLink
-            to="/dashboard"
-            className={({ isActive }) =>
-              isActive ? "text-primary font-bold" : "font-medium"
-            }
-          >
-            Dashboard
-          </NavLink>
-        </li>
-      )}
-    </>
-  );
+  const publicNavLinks = [
+    { to: "/", label: "Home", icon: FiHome },
+    { to: "/services", label: "Services", icon: FiGrid },
+    { to: "/about", label: "About", icon: FiInfo },
+    { to: "/contact", label: "Contact", icon: FiPhone },
+    { to: "/blog", label: "Blog", icon: FiBookOpen },
+  ];
+
+  const protectedNavLinks = [
+    { to: "/dashboard", label: "Dashboard", icon: FiUser },
+  ];
+
+  const navLinkClass = ({ isActive }) =>
+    `flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+      isActive
+        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+        : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+    }`;
 
   return (
-    <div className="navbar bg-emerald-300 shadow-md sticky top-0 z-50 px-4 md:px-8">
-      <div className="navbar-start">
-        <div className="dropdown">
-          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />
-            </svg>
-          </div>
-          <ul
-            tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-          >
-            {navLinks}
-          </ul>
-        </div>
-        <Link to="/" className="flex items-center">
-          <img src="/logo.png" alt="HomeHero" className="w-32" />
-        </Link>
-      </div>
-
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 gap-2">{navLinks}</ul>
-      </div>
-
-      <div className="navbar-end space-x-2">
-        {/* Dark Mode Toggle */}
-        <label className="swap swap-rotate mr-2">
-          <input
-            type="checkbox"
-            checked={darkMode}
-            onChange={(e) => handleTheme(e.target.checked)}
-          />
-          <svg className="swap-off h-8 w-8 fill-current" viewBox="0 0 24 24">
-            <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
-          </svg>
-          <svg className="swap-on h-8 w-8 fill-current" viewBox="0 0 24 24">
-            <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" />
-          </svg>
-        </label>
-
-        {user ? (
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar border-2 border-white"
-            >
-              <div className="w-10 rounded-full">
-                <img
-                  alt="User Profile"
-                  src={
-                    user?.photoURL ||
-                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                  }
-                  title={user?.displayName}
-                />
+    <>
+      {/* Main Navbar */}
+      <nav className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 sticky top-0 z-50 shadow-sm">
+        <div className="container-custom">
+          <div className="flex items-center justify-between h-16 px-4">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="w-10 h-10 bg-linear-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200">
+                <span className="text-white font-bold text-lg">H</span>
               </div>
+              <div className="hidden sm:block">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Home<span className="text-green-600">Hero</span>
+                </h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400 -mt-1">
+                  Trusted Services
+                </p>
+              </div>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-1">
+              {publicNavLinks.map((link) => (
+                <NavLink key={link.to} to={link.to} className={navLinkClass}>
+                  <link.icon className="w-4 h-4" />
+                  {link.label}
+                </NavLink>
+              ))}
+              {user &&
+                protectedNavLinks.map((link) => (
+                  <NavLink key={link.to} to={link.to} className={navLinkClass}>
+                    <link.icon className="w-4 h-4" />
+                    {link.label}
+                  </NavLink>
+                ))}
             </div>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              <li className="font-bold p-2 text-center border-b">
-                {user?.displayName}
-              </li>
-              <li>
-                <Link to="/dashboard">Dashboard Overview</Link>
-              </li>
-              <li>
-                <Link to="/dashboard/my-profile">My Profile</Link>
-              </li>
-              <li>
-                <button onClick={handleLogOut} className="text-red-500">
-                  Logout
+
+            {/* Right Side Actions */}
+            <div className="flex items-center space-x-3">
+              {/* Theme Toggle */}
+              <button
+                onClick={() => handleTheme(!darkMode)}
+                className="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors duration-200"
+                aria-label="Toggle theme"
+              >
+                {darkMode ? (
+                  <FiSun className="w-5 h-5" />
+                ) : (
+                  <FiMoon className="w-5 h-5" />
+                )}
+              </button>
+
+              {/* User Menu or Auth Buttons */}
+              {user ? (
+                <div
+                  className="relative profile-dropdown"
+                  onMouseEnter={() => setProfileDropdownOpen(true)}
+                  onMouseLeave={() => setProfileDropdownOpen(false)}
+                >
+                  <button className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors duration-200">
+                    <img
+                      src={
+                        user?.photoURL ||
+                        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face"
+                      }
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full border-2 border-green-500"
+                    />
+                    <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {user?.displayName?.split(" ")[0] || "User"}
+                    </span>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  <div
+                    className={`absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 transition-all duration-200 transform ${
+                      profileDropdownOpen
+                        ? "opacity-100 visible translate-y-0"
+                        : "opacity-0 invisible translate-y-1"
+                    }`}
+                  >
+                    <div className="p-3 border-b border-gray-200 dark:border-slate-700">
+                      <p className="font-medium text-gray-900 dark:text-white truncate">
+                        {user?.displayName}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                        {user?.email}
+                      </p>
+                    </div>
+                    <div className="p-2">
+                      <Link
+                        to="/dashboard"
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors duration-200"
+                        onClick={() => setProfileDropdownOpen(false)}
+                      >
+                        <FiUser className="w-4 h-4" />
+                        Dashboard
+                      </Link>
+                      <Link
+                        to="/dashboard/profile"
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors duration-200"
+                        onClick={() => setProfileDropdownOpen(false)}
+                      >
+                        <FiSettings className="w-4 h-4" />
+                        Settings
+                      </Link>
+                      <button
+                        onClick={handleLogOut}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
+                      >
+                        <FiLogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Link
+                    to="/login"
+                    className="hidden sm:flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              )}
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors duration-200"
+                aria-label="Toggle mobile menu"
+              >
+                {mobileMenuOpen ? (
+                  <FiX className="w-5 h-5" />
+                ) : (
+                  <FiMenu className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-40 bg-black/50"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div className="fixed right-0 top-0 h-full w-80 bg-white dark:bg-slate-900 shadow-xl transform transition-transform duration-300">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Menu
+                </h2>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400"
+                >
+                  <FiX className="w-5 h-5" />
                 </button>
-              </li>
-            </ul>
+              </div>
+
+              <nav className="space-y-2">
+                {publicNavLinks.map((link) => (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    className={navLinkClass}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <link.icon className="w-4 h-4" />
+                    {link.label}
+                  </NavLink>
+                ))}
+                {user &&
+                  protectedNavLinks.map((link) => (
+                    <NavLink
+                      key={link.to}
+                      to={link.to}
+                      className={navLinkClass}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <link.icon className="w-4 h-4" />
+                      {link.label}
+                    </NavLink>
+                  ))}
+              </nav>
+
+              {user && (
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-slate-700">
+                  <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+                    <img
+                      src={
+                        user?.photoURL ||
+                        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face"
+                      }
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full border-2 border-green-500"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 dark:text-white truncate">
+                        {user?.displayName}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                        {user?.email}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Link
+                      to="/dashboard/profile"
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors duration-200"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <FiSettings className="w-4 h-4" />
+                      Settings
+                    </Link>
+                    <button
+                      onClick={handleLogOut}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
+                    >
+                      <FiLogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {!user && (
+                <div className="mt-8 space-y-3">
+                  <Link
+                    to="/login"
+                    className="block w-full px-4 py-3 text-center text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors duration-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="block w-full px-4 py-3 text-center bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
-        ) : (
-          <div className="flex gap-2">
-            <Link to="/login" className="btn btn-ghost btn-sm hidden md:flex">
-              Login
-            </Link>
-            <Link to="/register" className="btn btn-primary btn-sm">
-              Join Now
-            </Link>
-          </div>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 

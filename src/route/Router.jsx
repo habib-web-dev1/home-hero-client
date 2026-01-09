@@ -1,10 +1,14 @@
 import { createBrowserRouter } from "react-router";
+import { API_ENDPOINTS } from "../config/api";
 import Layout from "../components/Layout";
 import Home from "../pages/Home";
 import AllServices from "../pages/AllServices";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ServiceDetails from "../pages/ServiceDetails";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
+import Blog from "../pages/Blog";
 import PrivateRoute from "../routes/PrivateRoute";
 import AdminRoute from "../routes/AdminRoute"; // Import AdminRoute
 import ProviderRoute from "../routes/ProviderRoute"; // Import ProviderRoute
@@ -35,6 +39,18 @@ const router = createBrowserRouter([
         element: <AllServices />,
       },
       {
+        path: "about",
+        element: <About />,
+      },
+      {
+        path: "contact",
+        element: <Contact />,
+      },
+      {
+        path: "blog",
+        element: <Blog />,
+      },
+      {
         path: "login",
         element: <Login />,
       },
@@ -44,10 +60,7 @@ const router = createBrowserRouter([
       },
       {
         path: "services/:id",
-        loader: ({ params }) =>
-          fetch(
-            `https://home-hero-server-kappa.vercel.app/services/${params.id}`
-          ),
+        loader: ({ params }) => fetch(API_ENDPOINTS.serviceById(params.id)),
         element: <ServiceDetails />,
       },
     ],

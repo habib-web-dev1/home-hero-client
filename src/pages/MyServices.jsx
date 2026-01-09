@@ -1,9 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState, useCallback, useContext } from "react";
-
 import { Link } from "react-router";
 import Swal from "sweetalert2";
 import { AuthContext } from "../context/AuthContext";
+import { API_ENDPOINTS } from "../config/api";
 
 const UpdateServiceModal = ({ service, onClose, onUpdateSuccess }) => {
   if (!service) return null;
@@ -40,7 +40,7 @@ const UpdateServiceModal = ({ service, onClose, onUpdateSuccess }) => {
       };
 
       const response = await axios.patch(
-        `https://home-hero-server-kappa.vercel.app/services/${service._id}`,
+        API_ENDPOINTS.serviceById(service._id),
         payload
       );
 
@@ -59,7 +59,7 @@ const UpdateServiceModal = ({ service, onClose, onUpdateSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-[100] p-4">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-2xl transform transition-all max-h-[90vh] overflow-y-auto">
         <h2 className="text-3xl font-bold mb-6 text-indigo-700">
           Update {service.name}
@@ -206,7 +206,7 @@ const MyServices = () => {
 
     try {
       const response = await axios.get(
-        `https://home-hero-server-kappa.vercel.app/services/user/${user.email}`
+        API_ENDPOINTS.servicesByUser(user.email)
       );
       setUserServices(response.data);
       setLoading(false);
@@ -243,9 +243,7 @@ const MyServices = () => {
 
   const handleConfirmDelete = async (serviceId, serviceName) => {
     try {
-      await axios.delete(
-        `https://home-hero-server-kappa.vercel.app/services/${serviceId}`
-      );
+      await axios.delete(API_ENDPOINTS.serviceById(serviceId));
 
       setUserServices((prev) =>
         prev.filter((service) => service._id !== serviceId)

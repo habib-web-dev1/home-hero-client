@@ -2,6 +2,7 @@ import React from "react";
 import { FaCalendarAlt, FaDollarSign, FaUser } from "react-icons/fa";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { API_ENDPOINTS } from "../config/api";
 
 const BookingModal = ({ service, user, isOpen, onClose }) => {
   if (!isOpen) return null;
@@ -38,10 +39,7 @@ const BookingModal = ({ service, user, isOpen, onClose }) => {
     };
 
     try {
-      const response = await axios.post(
-        `https://home-hero-server-kappa.vercel.app/bookings`,
-        newBooking
-      );
+      const response = await axios.post(API_ENDPOINTS.bookings, newBooking);
 
       if (response.data.insertedId) {
         Swal.fire({

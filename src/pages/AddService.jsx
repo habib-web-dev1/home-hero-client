@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { AuthContext } from "../context/AuthContext";
+import { API_ENDPOINTS } from "../config/api";
 import {
   FaDollarSign,
   FaEnvelope,
@@ -65,10 +66,7 @@ const AddService = () => {
     }
 
     try {
-      const response = await axios.post(
-        "https://home-hero-server-kappa.vercel.app/services",
-        newService
-      );
+      const response = await axios.post(API_ENDPOINTS.services, newService);
 
       if (response.data.insertedId) {
         Swal.fire({

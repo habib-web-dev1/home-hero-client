@@ -5,10 +5,12 @@ import Footer from "./Footer";
 
 const Layout = () => {
   return (
-    <div className="max-w-7xl mx-auto">
-      <Navbar></Navbar>
-      <Outlet></Outlet>
-      <Footer></Footer>
+    <div className="min-h-screen bg-white dark:bg-slate-900">
+      <Navbar />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
     </div>
   );
 };
