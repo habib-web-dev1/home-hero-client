@@ -18,13 +18,23 @@ const ServiceDetails = () => {
   const service = useLoaderData();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Early return if service is not loaded or incomplete
+  if (!service || !service.name) {
+    return (
+      <div className="container mx-auto p-10 text-center min-h-[80vh]">
+        <h2 className="text-3xl text-red-600">Error Loading Service</h2>
+        <p>The requested service could not be found.</p>
+      </div>
+    );
+  }
+
   const {
     name,
     price,
     category,
     description,
     image,
-    provider,
+    provider = {},
     reviews = [],
   } = service;
 
@@ -36,7 +46,8 @@ const ServiceDetails = () => {
   const { user } = useContext(AuthContext) || {};
   const navigate = useNavigate();
 
-  const isServiceOwner = user && provider && user.email === provider.email;
+  const isServiceOwner =
+    user && provider?.email && user.email === provider.email;
 
   const handleOpenModal = () => {
     if (!user) {
@@ -59,14 +70,6 @@ const ServiceDetails = () => {
     const numericPrice = parseFloat(priceObj || 0);
     return isNaN(numericPrice) ? "0.00" : numericPrice.toFixed(2);
   };
-  if (!service) {
-    return (
-      <div className="container mx-auto p-10 text-center min-h-[80vh]">
-        <h2 className="text-3xl text-red-600">Error Loading Service</h2>
-        <p>The requested service could not be found.</p>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto p-4 md:p-10 min-h-[80vh]">
@@ -112,9 +115,12 @@ const ServiceDetails = () => {
               <FaUserTie className="mr-2" /> Service Provided by:
             </h3>
             <div className="text-lg space-y-1">
-              <p className="font-semibold">{provider.name}</p>
+              <p className="font-semibold">
+                {provider?.name || "Unknown Provider"}
+              </p>
               <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
-                <FaEnvelope className="mr-2" /> {provider.email}
+                <FaEnvelope className="mr-2" />{" "}
+                {provider?.email || "No contact info"}
               </p>
             </div>
           </div>

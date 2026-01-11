@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Navigate, useLocation } from "react-router";
 
@@ -25,7 +25,7 @@ const ProviderRoute = ({ children }) => {
 
   // 3. If they are logged in but NOT a provider, send them back to Dashboard
   if (user) {
-    return <Navigate to="/dashboard/home" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   // 4. If they are not logged in at all, send them to Login

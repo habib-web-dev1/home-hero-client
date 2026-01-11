@@ -30,7 +30,7 @@ const AllServices = () => {
 
   // Fetch services with React Query
   const {
-    data: allServices = [],
+    data: servicesResponse,
     isLoading,
     error,
   } = useQuery({
@@ -38,21 +38,25 @@ const AllServices = () => {
     queryFn: async () => {
       const response = await fetch(API_ENDPOINTS.services);
       if (!response.ok) throw new Error("Failed to fetch services");
-      return response.json();
+      const data = await response.json();
+      return data;
     },
   });
 
+  // Extract services array from API response
+  const allServices = servicesResponse?.data || [];
+
   // Filter and sort services
   const filteredServices = React.useMemo(() => {
+    if (!Array.isArray(allServices)) return [];
+
     let filtered = [...allServices];
 
     // Search filter
     if (filters.search) {
       filtered = filtered.filter(
         (service) =>
-          service.serviceName
-            ?.toLowerCase()
-            .includes(filters.search.toLowerCase()) ||
+          service.name?.toLowerCase().includes(filters.search.toLowerCase()) ||
           service.description
             ?.toLowerCase()
             .includes(filters.search.toLowerCase()) ||

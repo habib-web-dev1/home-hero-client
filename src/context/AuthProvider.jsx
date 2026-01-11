@@ -53,7 +53,8 @@ const AuthProvider = ({ children }) => {
           const data = await res.json();
 
           // Combine Firebase user data with MongoDB role
-          setUser({ ...currentUser, role: data.role || "user" });
+          const userWithRole = { ...currentUser, role: data.role || "user" };
+          setUser(userWithRole);
         } catch (error) {
           console.error("Error fetching user role:", error);
           setUser(currentUser);

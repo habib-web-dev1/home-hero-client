@@ -208,10 +208,14 @@ const MyServices = () => {
       const response = await axios.get(
         API_ENDPOINTS.servicesByUser(user.email)
       );
-      setUserServices(response.data);
+
+      // Handle the API response structure {success: true, data: [...]}
+      const services = response.data?.data || response.data || [];
+      setUserServices(Array.isArray(services) ? services : []);
       setLoading(false);
     } catch (error) {
       console.error("Failed to load user services:", error);
+      setUserServices([]); // Set empty array on error
       Swal.fire({
         icon: "error",
         title: "Load Failed",
@@ -245,9 +249,10 @@ const MyServices = () => {
     try {
       await axios.delete(API_ENDPOINTS.serviceById(serviceId));
 
-      setUserServices((prev) =>
-        prev.filter((service) => service._id !== serviceId)
-      );
+      setUserServices((prev) => {
+        const currentServices = Array.isArray(prev) ? prev : [];
+        return currentServices.filter((service) => service._id !== serviceId);
+      });
 
       Swal.fire({
         icon: "success",
@@ -304,7 +309,7 @@ const MyServices = () => {
             </tr>
           </thead>
           <tbody>
-            {userServices.length === 0 ? (
+            {!Array.isArray(userServices) || userServices.length === 0 ? (
               <tr>
                 <td
                   colSpan="4"

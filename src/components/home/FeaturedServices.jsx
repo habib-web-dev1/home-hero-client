@@ -16,7 +16,7 @@ const FeaturedServices = () => {
   const [activeTab, setActiveTab] = useState("latest");
 
   // Fetch services data
-  const { data: services = [], isLoading } = useQuery({
+  const { data: servicesResponse, isLoading } = useQuery({
     queryKey: ["latest-services"],
     queryFn: async () => {
       const response = await fetch(API_ENDPOINTS.latestServices);
@@ -25,6 +25,8 @@ const FeaturedServices = () => {
     },
   });
 
+  const services = servicesResponse?.data || [];
+
   const tabs = [
     { id: "latest", label: "Latest Services", icon: FiClock },
     { id: "popular", label: "Most Popular", icon: FiHeart },
@@ -32,7 +34,7 @@ const FeaturedServices = () => {
   ];
 
   const getFilteredServices = () => {
-    if (!services.length) return [];
+    if (!Array.isArray(services) || !services.length) return [];
 
     switch (activeTab) {
       case "popular":

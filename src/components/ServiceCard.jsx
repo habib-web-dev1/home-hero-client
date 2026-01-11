@@ -13,12 +13,12 @@ import {
 const ServiceCard = ({ service, viewMode = "grid" }) => {
   const {
     _id,
-    serviceName,
+    name: serviceName,
     image,
     category,
     description,
     price,
-    provider,
+    provider = {},
     averageRating,
     reviewCount,
     serviceArea,

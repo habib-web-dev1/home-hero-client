@@ -27,20 +27,20 @@ const DashboardLayout = () => {
         <nav className="flex flex-col gap-2 flex-1">
           {/* COMMON FOR ALL LOGGED IN USERS */}
           <p className="text-[10px] uppercase text-slate-500 font-bold ml-2 mt-4">
-            Menu
+            Dashboard
           </p>
           <NavLink to="/dashboard" end className={activeClass}>
-            📊 Statistics
+            📊 Overview
           </NavLink>
           <NavLink to="/dashboard/profile" className={activeClass}>
             👤 Profile
           </NavLink>
 
-          {/* CUSTOMER / USER SECTION */}
+          {/* USER SECTION - Show for users and admins */}
           {(role === "user" || role === "admin") && (
             <>
-              <p className="text-[10px] uppercase text-slate-500 font-bold ml-2 mt-6">
-                Customer
+              <p className="text-[10px] uppercase text-blue-400 font-bold ml-2 mt-6">
+                Customer Features
               </p>
               <NavLink to="/dashboard/my-bookings" className={activeClass}>
                 📅 My Bookings
@@ -48,11 +48,11 @@ const DashboardLayout = () => {
             </>
           )}
 
-          {/* PROVIDER SECTION (Admins can also manage services) */}
+          {/* PROVIDER SECTION - Show for providers and admins */}
           {(role === "provider" || role === "admin") && (
             <>
-              <p className="text-[10px] uppercase text-slate-500 font-bold ml-2 mt-6">
-                Provider
+              <p className="text-[10px] uppercase text-green-400 font-bold ml-2 mt-6">
+                Provider Features
               </p>
               <NavLink to="/dashboard/add-service" className={activeClass}>
                 ➕ Add Service
@@ -66,14 +66,47 @@ const DashboardLayout = () => {
           {/* ADMIN ONLY SECTION */}
           {role === "admin" && (
             <>
-              <p className="text-[10px] uppercase text-red-500 font-bold ml-2 mt-6">
-                Administration
+              <p className="text-[10px] uppercase text-red-400 font-bold ml-2 mt-6">
+                Admin Controls
               </p>
               <NavLink to="/dashboard/manage-users" className={activeClass}>
                 👥 Manage Users
               </NavLink>
+              <NavLink to="/dashboard/analytics" className={activeClass}>
+                📈 Analytics
+              </NavLink>
+              <NavLink to="/dashboard/settings" className={activeClass}>
+                ⚙️ Platform Settings
+              </NavLink>
             </>
           )}
+
+          {/* ROLE INDICATOR */}
+          <div className="mt-6 p-3 bg-slate-800 rounded-lg border border-slate-700">
+            <p className="text-xs text-slate-400 mb-1">Current Role</p>
+            <div className="flex items-center gap-2">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  role === "admin"
+                    ? "bg-red-400"
+                    : role === "provider"
+                    ? "bg-green-400"
+                    : "bg-blue-400"
+                }`}
+              ></div>
+              <span
+                className={`text-sm font-semibold capitalize ${
+                  role === "admin"
+                    ? "text-red-400"
+                    : role === "provider"
+                    ? "text-green-400"
+                    : "text-blue-400"
+                }`}
+              >
+                {role}
+              </span>
+            </div>
+          </div>
         </nav>
 
         {/* Footer Link to Website */}

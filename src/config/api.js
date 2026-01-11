@@ -26,7 +26,8 @@ export const API_ENDPOINTS = {
 
   // Users
   users: `${API_BASE_URL}/users`,
-  userRole: (email) => `${API_BASE_URL}/users/role/${email}`,
+  userRole: (email) =>
+    `${API_BASE_URL}/users/role/${encodeURIComponent(email)}`,
   allUsers: `${API_BASE_URL}/all-users`,
 
   // Stats

@@ -2,9 +2,9 @@ import React, { use } from "react";
 import ServiceCard from "./ServiceCard";
 import { API_ENDPOINTS } from "../config/api";
 
-const servicePromise = fetch(API_ENDPOINTS.latestServices).then((res) =>
-  res.json()
-);
+const servicePromise = fetch(API_ENDPOINTS.latestServices)
+  .then((res) => res.json())
+  .then((response) => response.data || []);
 const LatestService = () => {
   const services = use(servicePromise);
   return (

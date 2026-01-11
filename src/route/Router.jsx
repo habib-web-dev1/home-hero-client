@@ -60,7 +60,14 @@ const router = createBrowserRouter([
       },
       {
         path: "services/:id",
-        loader: ({ params }) => fetch(API_ENDPOINTS.serviceById(params.id)),
+        loader: async ({ params }) => {
+          const response = await fetch(API_ENDPOINTS.serviceById(params.id));
+          if (!response.ok) {
+            throw new Error("Service not found");
+          }
+          const data = await response.json();
+          return data.success ? data.data : null;
+        },
         element: <ServiceDetails />,
       },
     ],
